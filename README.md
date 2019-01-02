@@ -8,3 +8,5 @@ find_7p.sh   - finds 7plus in any new messages since it last ran
 run find_7p before 7p_decode
 
 To get the mail imported, make sure your script matches the BPQMail import file
+
+You will need the 7plus executable for your distro
