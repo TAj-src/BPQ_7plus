@@ -1,5 +1,5 @@
 # BPQ_7plus
-BPQ Mail 7plus decode Linux script
+BPQ Mail 7plus find & decode Linux scripts
 
 find_7p.sh   - finds 7plus in any new messages since it last ran
 
