@@ -12,4 +12,5 @@ Run find_7p before 7p_decode
 
 To get the mail imported, make sure your script matches the BPQMail forward import file definition
 
-You will need the 7plus executable for your distro. I used 7pfbb_200.tgz (https://pc7x.net/archive/mirrors/pi8zaa/linux/fbb/tools/) 
+You will need the 7plus executable for your distro. I used https://sourceforge.net/projects/linfbb/files/7plus/7plus.tar.bz2
+You will need to build the source (I have uploaded a version make on a RaspPi here)
