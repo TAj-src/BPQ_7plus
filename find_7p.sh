@@ -62,7 +62,7 @@ fi
 
 shopt -s nullglob
 
-for  ((i=$LAST_FILE; i< $NEW_LAST_FILE; i++ ))
+for  ((i=$LAST_FILE; i<= $NEW_LAST_FILE; i++ ))
 do
   mailfile=$(printf "m_%06d.mes" $i)
   if [ ! -f $MAIL_DIR/$mailfile ]; then
