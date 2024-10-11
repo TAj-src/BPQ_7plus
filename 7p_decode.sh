@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #########################################################
 #
 # Modified by G7TAJ for use with BPQMail 12/2018
@@ -13,21 +14,18 @@
 #
 # Directory in which fbb software is installed
 #
-DESTDIR=/home/<usr>/linbpq
+DESTDIR=/home/username/linbpq
 BASE_BPQ=$DESTDIR
 #
 # 7PLUS administrator for report mails
-#
-# Should be like (no space character !) :
-#   SP_ADM=F5NUF@F6FBB.FMLR.FRA.EU
-#   SP_ADM=F6FBB
-#   SP_ADM="F5NUF@F6FBB.FMLR.FRA.EU F6FBB"
-#
-SP_ADM=YOUCALL@HOMEBBS
+# e.g. G7TAJ@GB7BEX.#38.GBR.EURO
+SP_ADM=callsign@bbsname.#HA
+
 #
 # Number of days to delete old 7plus parts
 #
 OLD_FILES=30
+
 #
 ######################################################################
 # Check carefully that the directories match your system
@@ -53,14 +51,36 @@ SP_DIR=$BASE_BPQ/7plus/extracted
 #
 # Directory for the decoded files
 #
-SP_RES=$SP_DIR/ok
+SP_RES=$BASE_BPQ/HTML/7plus
 #
 ########################################################
+
+function createlist() {
+
+  echo "Creating file list..." 
+
+  LIST_FILE=$SP_RES/list.csv
+
+  > "$LIST_FILE"
+
+  for FILE in $(ls -1t "$SP_RES"); do
+    if [[ -f "$SP_RES/$FILE" && "$FILE" != "list.csv" && "$FILE" != "index.html" ]]; then
+        TIMESTAMP="$(date -r "$SP_RES/$FILE" +"%Y-%m-%d %H:%M:%S")"
+        SIZE="$(stat -c%s "$SP_RES/$FILE")"
+        echo "$FILE,$TIMESTAMP,$SIZE" >> "$LIST_FILE"
+    fi
+  done
+
+  echo "Finished file list creation."
+}
+
+
 if [ ! -f $SP_LOG ]
 then
         echo "No $SP_LOG file to process..."
 exit 0
 fi
+
 if [ ! -d $SP_DIR ]
 then
   echo "Creating $SP_DIR"
@@ -71,6 +91,7 @@ then
     exit 1
   fi
 fi
+
 if [ ! -d $SP_RES ]
 then
   echo "Creating $SP_RES"
@@ -81,6 +102,7 @@ then
     exit 2
   fi
 fi
+
 # If a 7+ log file exists
 # Move it into the 7P directory
 #
@@ -92,14 +114,18 @@ fi
 # Go to the 7P directory
 #
 cd $SP_DIR
+
 #
 # Extract 7plus files from the log file and put them in the result directory
 #
+
 $SPLUS 7pl_log -y -x > /dev/null
+
 #
 # Go to the result directory to decode files
 #
 cd $SP_RES
+
 for file in $SP_DIR/*.p01
 do
   name=`basename $file .p01`
@@ -115,16 +141,20 @@ do
   fi
   rm 7pbpq_tmp
 done
+
 # to stop errors if zero files exist
 shopt -s nullglob
+
 for file in $SP_DIR/*.7pl
 do
   name=`basename $file .7pl`
-  echo -n "Trying to decode $SP_DIR/$name for 7pl ... "
+  echo -n "Trying to decode single file 7+ $SP_DIR/$name for 7pl ... "
   $SPLUS $SP_DIR/$name > 7pbpq_tmp
+
   if [ $? = 0 ]
   then
 echo -n "trying  $SP_DIR/$name.7pl"
+
     grep success 7pbpq_tmp >> 7pbpq_mail
     rm $SP_DIR/$name.7pl
     echo "Ok"
@@ -133,10 +163,12 @@ echo -n "trying  $SP_DIR/$name.7pl"
   fi
   rm 7pbpq_tmp
 done
+
 #
 # Delete old parts only in the SP_DIR directory
 #
 find $SP_DIR -maxdepth 1 -daystart -atime +$OLD_FILES -name '*' -print -exec rm {} \; > 7pbpq_tmp
+
 #
 # Add the deleted files to the report file
 #
@@ -150,9 +182,11 @@ then
   done < 7pbpq_tmp
 fi
 rm 7pbpq_tmp
+
 #
 # Create report message if needed
 #
+
 if [ -f 7pbpq_mail ]
 then
   for ADM in $SP_ADM
@@ -160,8 +194,11 @@ then
     (echo "SP $ADM" ; echo "7p Decode report" ; cat 7pbpq_mail ; echo "/EX" ) >> $MAIL_IN
   done
   rm 7pbpq_mail
+  createlist
 fi
+
 #
 # All correct... Bye !
 #
+
 exit 0
