@@ -14,17 +14,12 @@
 #
 # Directory in which fbb software is installed
 #
-DESTDIR=/home/<usr>/linbpq
+DESTDIR=/home/<usrname>/linbpq
 BASE_BPQ=$DESTDIR
 #
 # 7PLUS administrator for report mails
-#
-# Should be like (no space character !) :
-#   SP_ADM=F5NUF@F6FBB.FMLR.FRA.EU
-#   SP_ADM=F6FBB
-#   SP_ADM="F5NUF@F6FBB.FMLR.FRA.EU F6FBB"
-#
-SP_ADM=YOUCALL@HOMEBBS
+# e.g. G7TAJ@GB7BEX.#38.GBR.EURO
+SP_ADM=callsign@bbs.ha
 
 #
 # Number of days to delete old 7plus parts
@@ -56,9 +51,28 @@ SP_DIR=$BASE_BPQ/7plus/extracted
 #
 # Directory for the decoded files
 #
-SP_RES=$SP_DIR/ok
+SP_RES=$BASE_BPQ/HTML/7plus
 #
 ########################################################
+
+function createlist() {
+
+  echo "Creating file list..." 
+
+  LIST_FILE=$SP_RES/list.csv
+
+  > "$LIST_FILE"
+
+  for FILE in $(ls -1t "$SP_RES"); do
+    if [[ -f "$SP_RES/$FILE" && "$FILE" != "list.csv" && "$FILE" != "index.html" ]]; then
+        TIMESTAMP="$(date -r "$SP_RES/$FILE" +"%Y-%m-%d %H:%M:%S")"
+        SIZE="$(stat -c%s "$SP_RES/$FILE")"
+        echo "$FILE,$TIMESTAMP,$SIZE" >> "$LIST_FILE"
+    fi
+  done
+
+  echo "Finished file list creation."
+}
 
 
 if [ ! -f $SP_LOG ]
@@ -134,7 +148,7 @@ shopt -s nullglob
 for file in $SP_DIR/*.7pl
 do
   name=`basename $file .7pl`
-  echo -n "Trying to decode $SP_DIR/$name for 7pl ... "
+  echo -n "Trying to decode single file 7+ $SP_DIR/$name for 7pl ... "
   $SPLUS $SP_DIR/$name > 7pbpq_tmp
 
   if [ $? = 0 ]
@@ -180,6 +194,7 @@ then
     (echo "SP $ADM" ; echo "7p Decode report" ; cat 7pbpq_mail ; echo "/EX" ) >> $MAIL_IN
   done
   rm 7pbpq_mail
+  createlist
 fi
 
 #
