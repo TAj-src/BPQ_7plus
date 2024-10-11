@@ -167,7 +167,7 @@ done
 #
 # Delete old parts only in the SP_DIR directory
 #
-find $SP_DIR -maxdepth 1 -daystart -atime +$OLD_FILES -name '*' -print -exec rm {} \; > 7pbpq_tmp
+find $SP_DIR/* -maxdepth 1 -daystart -atime +$OLD_FILES -name '*' -print -exec rm {} \; > 7pbpq_tmp
 
 #
 # Add the deleted files to the report file
