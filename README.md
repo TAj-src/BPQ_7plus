@@ -5,6 +5,8 @@ find_7p.sh   - finds 7plus in any new messages since it last ran
 
 7p_decode.sh - decodes any parts in the log file created by find_7p.sh
 
+Make cron entries for the above two, as often as you feel necessary (ever hour is probably ok, if overkill)
+
 *** VER2
 This script now puts the decoded files into the linbpq/HTML/7plus folder (needs creating).
 It creates a `list.csv` file with the files in this directory which the index.html file reads to display
