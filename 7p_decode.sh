@@ -63,14 +63,14 @@ function createlist() {
 
   > "$LIST_FILE"
 
-  for FILE in $(ls -1t "$SP_RES"); do
+  for FILE in $(ls -1t --time=birth "$SP_RES"); do
     if [[ -f "$SP_RES/$FILE" && "$FILE" != "list.csv" && "$FILE" != "index.html" ]]; then
-        TIMESTAMP="$(date -r "$SP_RES/$FILE" +"%Y-%m-%d %H:%M:%S")"
+        TIMESTAMP="$(stat -c%W "$SP_RES/$FILE")"
         SIZE="$(stat -c%s "$SP_RES/$FILE")"
         echo "$FILE,$TIMESTAMP,$SIZE" >> "$LIST_FILE"
     fi
   done
-
+  
   echo "Finished file list creation."
 }
 
